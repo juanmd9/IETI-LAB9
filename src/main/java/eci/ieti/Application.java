@@ -2,14 +2,26 @@ package eci.ieti;
 
 import eci.ieti.data.CustomerRepository;
 import eci.ieti.data.ProductRepository;
+import eci.ieti.data.TodoRepository;
+import eci.ieti.data.UserRepository;
 import eci.ieti.data.model.Customer;
 import eci.ieti.data.model.Product;
 
+import eci.ieti.data.model.Todo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.concurrent.ThreadLocalRandom;
 
 @SpringBootApplication
 public class Application implements CommandLineRunner {
@@ -20,7 +32,13 @@ public class Application implements CommandLineRunner {
 
     @Autowired
     private ProductRepository productRepository;
-    
+
+    @Autowired
+    private TodoRepository todoRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
@@ -60,6 +78,60 @@ public class Application implements CommandLineRunner {
         productRepository.findByDescriptionContaining("plus", PageRequest.of(0, 2)).stream()
         	.forEach(System.out::println);
    
+        System.out.println();
+
+
+        todoRepository.deleteAll();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+
+        todoRepository.save(new Todo(1l, "Laboratorio ieti", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Juan", "pending"));
+        todoRepository.save(new Todo(2l, "Laboratorio arep", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Juan", "pending"));
+        todoRepository.save(new Todo(3l, "Tarea de investigación", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Juan", "pending"));
+        todoRepository.save(new Todo(4l, "Cita médica", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Manuel", "pending"));
+        todoRepository.save(new Todo(5l, "Algo", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Manuel", "pending"));
+        todoRepository.save(new Todo(6l, "Cita", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Daniel", "pending"));
+        todoRepository.save(new Todo(7l, "Tarea", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Daniel", "pending"));
+        todoRepository.save(new Todo(8l, "Salir", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Felipe", "pending"));
+        todoRepository.save(new Todo(8l, "Ir a entrenar", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Felipe", "pending"));
+        todoRepository.save(new Todo(9l, "Hacer cardio", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Luis", "pending"));
+        todoRepository.save(new Todo(10l, "Hacer tareas", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Luis", "pending"));
+        todoRepository.save(new Todo(11l, "Estudiar", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Ana", "pending"));
+        todoRepository.save(new Todo(12l, "Presentar examen", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Ana", "pending"));
+        todoRepository.save(new Todo(13l, "Descansar", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Sofia", "pending"));
+        todoRepository.save(new Todo(14l, "Salir al parque", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Sofia", "pending"));
+        todoRepository.save(new Todo(15l, "Hacer mercado", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Daniel", "pending"));
+        todoRepository.save(new Todo(16l, "Cita Ortodoncia", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Daniel", "pending"));
+        todoRepository.save(new Todo(17l, "Cita con Juan", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Valentina", "pending"));
+        todoRepository.save(new Todo(18l, "Entrenar boxing", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Valentina", "pending"));
+        todoRepository.save(new Todo(19l, "Hacer crossfit", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Valentina", "pending"));
+        todoRepository.save(new Todo(20l, "Verse con amigos", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Valeria", "pending"));
+        todoRepository.save(new Todo(21l, "Salir con amigas", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Valeria", "pending"));
+        todoRepository.save(new Todo(22l, "Salir a comer", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Maria", "pending"));
+        todoRepository.save(new Todo(23l, "Ir a clase", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Maria", "pending"));
+        todoRepository.save(new Todo(24l, "Cita con Valentina", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Juan", "pending"));
+        todoRepository.save(new Todo(25l, "Ir a bailar", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Manuel", "pending"));
+
+        System.out.println("Paginated search of todos by criteria:");
+        System.out.println("-------------------------------");
+
+        todoRepository.findByResponsibleContaining("Juan", PageRequest.of(0, 5)).stream()
+                .forEach(System.out::println);
+
+        System.out.println();
+
+        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(AppConfiguration.class);
+        MongoOperations mongoOperation = (MongoOperations) applicationContext.getBean("mongoTemplate");
+
+        Query query = new Query();
+        query.addCriteria(Criteria.where("firstName").is("Alice"));
+
+        Customer customer = mongoOperation.findOne(query, Customer.class);
+
+        System.out.println("Customer found by Query:");
+        System.out.println("-------------------------------");
+
+        System.out.println(customer);
+
         System.out.println();
     }
 

@@ -5,7 +5,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.List;
+
 public interface TodoRepository extends CrudRepository<Todo, Long>{
 
 	Page<Todo> findByResponsibleContaining(String responsible, Pageable pageable);
+
+	List<Todo> findByDueDateBetween(String date);
 }

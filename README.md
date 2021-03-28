@@ -28,22 +28,3 @@ R:/ Two, because the PageRequest is requiring than any page have just two items.
 
 
 R:/ In the models than have the @Document, so the collection takes the name of the class.
-
-
-## Part 2: Custom configuration and Queries
-
-5. Read some of the documentation about queries in Spring Data MongoDB:
- 
-    * https://www.baeldung.com/queries-in-spring-data-mongodb
-    * https://www.mkyong.com/mongodb/spring-data-mongodb-query-document/
-
-6. In the *Application* class create mocked data for 25 Todos and 10 different users (make sure the Todos have different dueDates and responsible)
-
-7. Create the following queries using the Query class:
-
-    * Todos where the dueDate has expired
-    * Todos that are assigned to given user and have priority greater equal to 5
-    * Users that have assigned more than 2 Todos.
-    * Todos that contains a description with a length greater than 30 characters        
-
-8. Implement the queries of the previous step using *derived query methods* in your repository interface. Is it possible to implement all of them?

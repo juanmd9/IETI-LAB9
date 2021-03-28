@@ -21,7 +21,9 @@ import org.springframework.data.mongodb.core.query.Query;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.regex.Pattern;
 
 @SpringBootApplication
 public class Application implements CommandLineRunner {
@@ -84,9 +86,9 @@ public class Application implements CommandLineRunner {
         todoRepository.deleteAll();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
-        todoRepository.save(new Todo(1l, "Laboratorio ieti", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Juan", "pending"));
-        todoRepository.save(new Todo(2l, "Laboratorio arep", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Juan", "pending"));
-        todoRepository.save(new Todo(3l, "Tarea de investigación", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Juan", "pending"));
+        todoRepository.save(new Todo(1l, "Laboratorio ieti y este es una prueba para tener mas de 30 caracteres.", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Juan", "pending"));
+        todoRepository.save(new Todo(2l, "Laboratorio arep", 2l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Juan", "pending"));
+        todoRepository.save(new Todo(3l, "Tarea de investigación", 5l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Juan", "pending"));
         todoRepository.save(new Todo(4l, "Cita médica", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Manuel", "pending"));
         todoRepository.save(new Todo(5l, "Algo", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Manuel", "pending"));
         todoRepository.save(new Todo(6l, "Cita", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Daniel", "pending"));
@@ -109,7 +111,7 @@ public class Application implements CommandLineRunner {
         todoRepository.save(new Todo(22l, "Salir a comer", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Maria", "pending"));
         todoRepository.save(new Todo(23l, "Ir a clase", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Maria", "pending"));
         todoRepository.save(new Todo(24l, "Cita con Valentina", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Juan", "pending"));
-        todoRepository.save(new Todo(25l, "Ir a bailar", 10l, format.format(new Date(ThreadLocalRandom.current().nextInt() * 1000L)), "Manuel", "pending"));
+        todoRepository.save(new Todo(25l, "Ir a bailar", 10l, format.format(new Date()), "Manuel", "pending"));
 
         System.out.println("Paginated search of todos by criteria:");
         System.out.println("-------------------------------");
@@ -131,6 +133,52 @@ public class Application implements CommandLineRunner {
         System.out.println("-------------------------------");
 
         System.out.println(customer);
+
+        System.out.println();
+
+        Query query1 = new Query();
+        query1.addCriteria(Criteria.where("dueDate").lt(format.format(new Date())));
+        List<Todo> todoList = mongoOperation.find(query1, Todo.class);
+
+        System.out.println("DueDate expired, found by Query:");
+        System.out.println("-------------------------------");
+
+        todoList.forEach(todo -> System.out.println(todo));
+
+        System.out.println();
+
+        Query query2 = new Query();
+        String givenUser = "Juan";
+        query2.addCriteria(Criteria.where("responsible").regex(givenUser));
+        query2.addCriteria(Criteria.where("priority").gte(5));
+        List<Todo> todoListByUser = mongoOperation.find(query2, Todo.class);
+
+        System.out.println("Given user and priority greater equal to 5, found by Query:");
+        System.out.println("-------------------------------");
+
+        todoListByUser.forEach(todo -> System.out.println(todo));
+
+        System.out.println();
+
+        /*Query query3 = new Query();
+        query3.addCriteria(Criteria.where());
+        List<Todo> todoListUserTwoTodo = mongoOperation.find(query3, Todo.class);
+
+        System.out.println("Todos that contains a description with a length greater than 30 characters, found by Query:");
+        System.out.println("-------------------------------");
+
+        todoListUserTwoTodo.forEach(todo -> System.out.println(todo));
+
+        System.out.println();*/
+
+        Query query4 = new Query();
+        query4.addCriteria(Criteria.where("description").regex("[a-z,A-Z,0-9,' ']{30,}"));
+        List<Todo> todoListByDescription = mongoOperation.find(query4, Todo.class);
+
+        System.out.println("Todos that contains a description with a length greater than 30 characters, found by Query:");
+        System.out.println("-------------------------------");
+
+        todoListByDescription.forEach(todo -> System.out.println(todo));
 
         System.out.println();
     }
